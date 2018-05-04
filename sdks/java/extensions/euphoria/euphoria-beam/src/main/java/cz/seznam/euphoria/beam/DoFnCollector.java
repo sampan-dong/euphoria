@@ -36,11 +36,10 @@ import javax.annotation.concurrent.NotThreadSafe;
 public class DoFnCollector<OUT> implements Collector<OUT>, Context {
 
   private final AccumulatorProvider accumulators;
-  private final Consumer<OUT> outputConsumer;
+  private Consumer<OUT> outputConsumer;
 
-  DoFnCollector(AccumulatorProvider accumulators, Consumer<OUT> outputConsumer) {
+  DoFnCollector(AccumulatorProvider accumulators) {
     this.accumulators = accumulators;
-    this.outputConsumer = outputConsumer;
   }
 
   @Override
@@ -72,5 +71,9 @@ public class DoFnCollector<OUT> implements Collector<OUT>, Context {
   @Override
   public Timer getTimer(String name) {
     return accumulators.getTimer(name);
+  }
+
+  public void setOutputConsumer(Consumer<OUT> outputConsumer) {
+    this.outputConsumer = outputConsumer;
   }
 }
