@@ -52,9 +52,10 @@ public class HadoopFileSource<K, V> extends HadoopSource<K, V> {
   @Override
   public List<BoundedDataSource<Pair<K, V>>> split(long desiredSplitSizeBytes) {
     final Job job = newJob();
-    long splitSize = Math.max(MIN_SPLIT_SIZE, desiredSplitSizeBytes);
+
+    long splitSize = getConf().getLong(FileInputFormat.SPLIT_MAXSIZE, MIN_SPLIT_SIZE);
     LOG.info(String.format("%s's max and min input split size will be set to %,d .",
-        FileInputFormat.class.getSimpleName(), desiredSplitSizeBytes));
+        FileInputFormat.class.getSimpleName(), splitSize));
 
     FileInputFormat.setMinInputSplitSize(job, splitSize);
     FileInputFormat.setMaxInputSplitSize(job, splitSize);
