@@ -1,5 +1,4 @@
 ext {
-  beamVersion = '2.6.0'
   hamcrestVersion = '1.3'
 }
 

@@ -17,7 +17,7 @@ ext {
   mockitoVersion = '2.10.0'
 
   // ~ benchmark dependencies
-  beamVersion = '0.6.0'
+  beamVersion = '2.8.0-SNAPSHOT'
   beamFlinkVersion = '1.2.1'
   beamScalaVersion = '2.10'
   beamSparkVersion = '1.6.3'

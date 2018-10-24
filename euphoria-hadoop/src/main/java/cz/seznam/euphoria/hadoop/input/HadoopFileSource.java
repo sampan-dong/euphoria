@@ -16,7 +16,7 @@
 package cz.seznam.euphoria.hadoop.input;
 
 import cz.seznam.euphoria.core.client.io.BoundedDataSource;
-import cz.seznam.euphoria.core.client.util.Pair;
+import org.apache.beam.sdk.values.KV;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -50,7 +50,7 @@ public class HadoopFileSource<K, V> extends HadoopSource<K, V> {
   }
 
   @Override
-  public List<BoundedDataSource<Pair<K, V>>> split(long desiredSplitSizeBytes) {
+  public List<BoundedDataSource<KV<K, V>>> split(long desiredSplitSizeBytes) {
     final Job job = newJob();
     long splitSize = Math.max(MIN_SPLIT_SIZE, desiredSplitSizeBytes);
     LOG.info(String.format("%s's max and min input split size will be set to %,d .",
