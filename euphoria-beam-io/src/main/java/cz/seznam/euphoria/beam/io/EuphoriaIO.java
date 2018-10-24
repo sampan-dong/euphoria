@@ -167,10 +167,6 @@ public class EuphoriaIO {
       sink.initialize();
 
       input
-          .apply("extract-partition", ParDo.of(new PartitionFn<>(numPartitions)))
-          .setTypeDescriptor(
-              TypeDescriptors.kvs(TypeDescriptors.integers(), input.getTypeDescriptor()))
-          .apply("group-by-partition", GroupByKey.create())
           .apply("write-result", ParDo.of(new WriteFn<>(sink)))
           .apply(Combine.globally((it) ->
               (int) StreamSupport.stream(it.spliterator(), false).count()))
@@ -204,24 +200,30 @@ public class EuphoriaIO {
     }
   }
 
-  private static class WriteFn<T> extends DoFn<KV<Integer, Iterable<T>>, Integer> {
+  private static class WriteFn<T> extends DoFn<T, Integer> {
 
-    private final DataSink<T> sink;
+    Random random = new Random();
+    final Writer<T> writer;
 
     WriteFn(DataSink<T> sink) {
-      this.sink = sink;
+      writer = sink.openWriter(random.nextInt());
     }
+
 
     @SuppressWarnings("unused")
     @ProcessElement
-    public void processElement(@Element KV<Integer, Iterable<T>> element) throws IOException {
-      final Writer<T> writer = sink.openWriter(requireNonNull(element.getKey()));
+    public void processElement(@Element T element) throws IOException {
+      writer.write(element);
+    }
+
+    @SuppressWarnings("unused")
+    @FinishBundle
+    public void finishBatch() throws IOException {
       try {
-        for (T item : element.getValue()) {
-          writer.write(item);
-        }
+
         writer.flush();
         writer.commit();
+
       } catch (IOException e) {
         writer.rollback();
       } finally {
